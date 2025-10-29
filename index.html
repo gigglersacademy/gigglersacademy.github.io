@@ -638,14 +638,28 @@
 
         // Razorpay Integration for Buy Me a Coffee
         document.getElementById('buyMeCoffee').addEventListener('click', function() {
+            var amountInput = prompt('Enter amount in ₹ (Minimum ₹10):', '50');
+    
+            if (amountInput === null) {
+                return;
+            }
+            
+            var amountInRupees = parseInt(amountInput);
+    
+            if (isNaN(amountInRupees) || amountInRupees < 10) {
+                alert('Please enter a valid amount (minimum ₹10)');
+                return;
+            }
+    
+            var amountInPaise = amountInRupees * 100;
+    
             var options = {
                 "key": "rzp_test_RZ7pyFNJhCsEBF", // Replace with your Razorpay Key ID
-                "amount": "5000", // Amount in paise (50 rupees = 5000 paise)
+                "amount": amountInPaise.toString(), // Amount in paise (50 rupees = 5000 paise)
                 "currency": "INR",
                 "name": "Gigglers Academy",
                 "description": "Support Our Channel",
                 "image": "logo.png", // Your Gigglers Academy logo
-                "editable": true,
                 "handler": function (response) {
                     alert("Thank you for your support! Payment ID: " + response.razorpay_payment_id);
                     // You can send this payment info to your server for verification
@@ -665,10 +679,6 @@
             };
             
             var rzp1 = new Razorpay(options);
-            document.getElementById('buyMeCoffee').onclick = function(e){
-                rzp1.open();
-                e.preventDefault();
-            }
             rzp1.on('payment.failed', function (response) {
                 alert("Payment failed. Please try again.");
                 console.log(response.error);
