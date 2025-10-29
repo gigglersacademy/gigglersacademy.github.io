@@ -664,6 +664,10 @@
             };
             
             var rzp1 = new Razorpay(options);
+            document.getElementById('buyMeCoffee').onclick = function(e){
+                rzp1.open();
+                e.preventDefault();
+            }
             rzp1.on('payment.failed', function (response) {
                 alert("Payment failed. Please try again.");
                 console.log(response.error);
