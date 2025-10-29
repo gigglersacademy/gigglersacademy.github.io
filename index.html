@@ -462,6 +462,150 @@
                 opacity: 1;
             }
         }
+
+        .amount-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(34, 168, 141, 0.9);
+    animation: fadeIn 0.3s ease;
+}
+
+.amount-modal-content {
+    background: linear-gradient(135deg, #ffffff 0%, #F0F9F7 100%);
+    margin: 20% auto;
+    padding: 40px;
+    border-radius: 25px;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+    animation: slideUp 0.4s ease;
+    border: 4px solid var(--secondary-color);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.amount-modal-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.amount-modal-content p {
+    color: var(--dark-text);
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+}
+
+.amount-input-wrapper {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.rupee-symbol {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.amount-modal-content input {
+    width: 100%;
+    padding: 18px 20px 18px 50px;
+    font-size: 1.5rem;
+    border: 3px solid var(--primary-color);
+    border-radius: 15px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--dark-text);
+    transition: all 0.3s ease;
+}
+
+.amount-modal-content input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 20px rgba(60, 181, 224, 0.3);
+}
+
+.quick-amounts {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.quick-amount-btn {
+    padding: 10px 20px;
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quick-amount-btn:hover {
+    background: var(--secondary-color);
+    color: white;
+    transform: scale(1.1);
+    border-color: var(--secondary-color);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 15px 40px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-btn-proceed {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    box-shadow: 0 5px 15px rgba(34, 168, 141, 0.3);
+}
+
+.modal-btn-proceed:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(34, 168, 141, 0.4);
+}
+
+.modal-btn-cancel {
+    background: #f0f0f0;
+    color: var(--dark-text);
+}
+
+.modal-btn-cancel:hover {
+    background: #e0e0e0;
+        }
     </style>
 </head>
 <body>
@@ -602,6 +746,42 @@
         </div>
     </footer>
 
+    <div id="amountModal" class="amount-modal">
+    <div class="amount-modal-content">
+        <h3>☕ Support Us!</h3>
+        <p>Choose or enter your contribution amount</p>
+        
+        <!-- Quick amount buttons -->
+        <div class="quick-amounts">
+            <button class="quick-amount-btn" data-amount="10">₹10</button>
+            <button class="quick-amount-btn" data-amount="50">₹50</button>
+            <button class="quick-amount-btn" data-amount="100">₹100</button>
+            <button class="quick-amount-btn" data-amount="500">₹500</button>
+        </div>
+        
+        <!-- Custom amount input -->
+        <div class="amount-input-wrapper">
+            <span class="rupee-symbol">₹</span>
+            <input 
+                type="number" 
+                id="modalAmountInput" 
+                placeholder="50" 
+                min="10" 
+                value="50"
+            >
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-proceed" id="confirmAmount">
+                Proceed to Payment →
+            </button>
+            <button class="modal-btn modal-btn-cancel" id="cancelAmount">
+                Cancel
+            </button>
+        </div>
+    </div>
+    </div>
+
     <script>
         // Hamburger Menu Toggle
         const hamburger = document.getElementById('hamburger');
@@ -636,23 +816,48 @@
             observer.observe(el);
         });
 
+        // Quick amount buttons
+document.querySelectorAll('.quick-amount-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.getElementById('modalAmountInput').value = this.getAttribute('data-amount');
+    });
+});
+
+// Show modal on Buy Me Coffee click
+document.getElementById('buyMeCoffee').addEventListener('click', function() {
+    document.getElementById('amountModal').style.display = 'block';
+    document.getElementById('modalAmountInput').focus();
+});
+
+// Cancel button - close modal
+document.getElementById('cancelAmount').addEventListener('click', function() {
+    document.getElementById('amountModal').style.display = 'none';
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    var modal = document.getElementById('amountModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+});
+
         // Razorpay Integration for Buy Me a Coffee
-        document.getElementById('buyMeCoffee').addEventListener('click', function() {
-            var amountInput = prompt('Enter amount in ₹ (Minimum ₹10):', '50');
+        document.getElementById('confirmAmount').addEventListener('click', function() {
+            var amountInRupees = parseInt(document.getElementById('modalAmountInput').value);
     
-            if (amountInput === null) {
-                return;
-            }
+    // Validate amount
+    if (isNaN(amountInRupees) || amountInRupees < 10) {
+        alert('Please enter a valid amount (minimum ₹10)');
+        return;
+    }
+    
+    // Close modal
+    document.getElementById('amountModal').style.display = 'none';
+    
+    // Convert rupees to paise (Razorpay uses paise)
+    var amountInPaise = amountInRupees * 100;
             
-            var amountInRupees = parseInt(amountInput);
-    
-            if (isNaN(amountInRupees) || amountInRupees < 10) {
-                alert('Please enter a valid amount (minimum ₹10)');
-                return;
-            }
-    
-            var amountInPaise = amountInRupees * 100;
-    
             var options = {
                 "key": "rzp_test_RZ7pyFNJhCsEBF", // Replace with your Razorpay Key ID
                 "amount": amountInPaise.toString(), // Amount in paise (50 rupees = 5000 paise)
